@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Echoes of the Coliseum: Towards 3D Live streaming of Sports Events">
+  <meta name="keywords" content="Sports Events, Human-Centric Events, Gaussian Splatting, Real-time 3D Reconstruction">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Echoes of the Coliseum: Towards 3D Live streaming of Sports Events</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script> -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://keunhong.com">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://hypernerf.github.io">
+            HyperNeRF
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            Nerfies
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav> -->
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">Echoes of the Coliseum: Towards 3D Live streaming of Sports Events</h1>
+          
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">ACM Transactions on Graphics (SIGGRAPH), 2025</span>
+          </div>
+
+          <br/>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.junkai.site">Junkai Huang</a><strong><sup>*</sup></strong>,
+            </span>
+            <span class="author-block">
+              <a href="">Saswat Subhajyoti Mallick</a><strong><sup>*</sup></strong>,
+            </span>
+            <span class="author-block">
+              <a href="https://alejandroamat.me">Alejandro Amat</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://marcruizolle.com/">Marc Ruiz Olle</a></a><strong><sup>+</sup></strong>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.albertmosellamontoro.com/">Albert Mosella-Montoro</a></a><strong><sup>+</sup></strong>,
+            </span>
+            <span class="author-block">
+              <a href="https://snosixtyboo.github.io">Bernhard Kerbl</a>,
+            </span>
+            <span class="author-block">
+              <a href="">Francisco Vicente Carrasco</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.ri.cmu.edu/ri-faculty/fernando-de-la-torre-frade/">Fernando De la Torre</a>
+            </span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"> </span><br>
+            <span class="author-block">* Denotes equal contribution</span><br>
+            <span class="author-block">+ Indicates contribution to dataset</span>
+          </div>
+          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> </span>
+            <!-- <span class="author-block">Carnegie Mellon University</span> -->
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <img src="./static/images/cmu-logo.jpg" class="interpolation-image" alt="Interpolate start reference image." width="10%"/>
+            <img src="./static/images/hsl_logo.png" class="interpolation-image" alt="Interpolate start reference image." width="20%"/>
+            <!-- <img src="./static/images/cmu-ri-logo.svg" class="interpolation-image" alt="Interpolate start reference image." width="50%"/> -->
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://dl.acm.org/doi/pdf/10.1145/3731214"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="https://youtu.be/w3GAuPzxMHo"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/humansensinglab/basket-multiview"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="data.html"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-database"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+                </span>
+              <!-- Challenge Link. -->
+              <!-- <span class="link-block">
+                <a href="https://eval.ai"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-bullseye"></i>
+                  </span>
+                  <span>Participate</span>
+                  </a>
+                </span> -->
+            </div>
+
+          </div>
+
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <!-- <div class="hero-body"> -->
+        <div class="hero-body p-0">
+          <img src="./static/images/teaser_v4.png"
+                     class="interpolation-image"
+                     alt="Interpolate start reference image."
+                     width="100%"/>
+          <h2 class="subtitle has-text-centered">
+            We introduce LiveSplats, an end-to-end streaming framework, which takes multi-view video streams of sports events as input and reconstructs the dynamic 3D scene to allow viewers to watch from any novel view with interactive frame rates.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<br/>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item">
+              <video poster="" id="1" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/atc4_render_cam_36.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+            <div class="item">
+              <video poster="" id="2" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/atc2_render_cam_45.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+            <div class="item">
+              <video poster="" id="3" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/def2_render_cam_39.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+            <div class="item">
+              <video poster="" id="4-tp" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/atc3_render_cam_0.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+            <div class="item">
+              <video poster="" id="5" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/int1_render_cam_9.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Human-centered live events have always played a pivotal role in shaping culture and fostering social connections. Traditional 2D live transmissions fail to replicate the immersive quality of physical attendance. Addressing this gap, this paper proposes <b>LiveSplats</b>, a framework towards real-time, photo-realistic 3D reconstructions of live events using high-performance 3D Gaussian Splatting. 
+          </p>
+          <p>
+            Our solution capitalizes on strong geometric priors to optimize through distributed processing and load balancing, enabling interactive, freely explorable 3D experiences. By dividing scene reconstruction into actor-centric and environment-specific tasks, we employ hierarchical coarse-to-fine optimization to rapidly and accurately reconstruct human actors based on pose data, refining their geometry and appearance with photometric loss. For static environments, we focus on view-dependent appearance changes, streamlining rendering efficiency and maximizing GPU performance. To facilitate evaluation, we introduce (and distribute) a synthetic benchmark dataset of basketball games, offering high visual fidelity as ground truth. In both our synthetic benchmark and publicly available benchmarks, LiveSplats consistently outperforms existing approaches.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/w3GAuPzxMHo?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    
+    <!-- Method. -->
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="has-text-centered">
+          <h2 class="title is-3">Method</h2>
+        </div>
+        <br/>
+        <img src="./static/images/method_v5.png"
+        class="interpolation-image"
+        alt="Interpolate start reference image."
+        width="100%"/>
+        <p>
+          LiveSplats first segments multi-view images at frame t, to obtain per-subject segmentation masks for each subject, and passes the masked RGB images of each subject to the nodes. Each node will then optimize 3D Gaussians at t for that subject, using either dynamic or static optimization logic. The optimized 3D Gaussians are collected from each node and aggregated into a single model, and then served for on-demand renderings from arbitrary viewpoints to clients.
+        </p>
+      </div>
+    </div>
+
+  <!-- <div class="has-text-centered">
+    <h2 class="title is-5">Demo on Quest 3</h2>
+  </div>
+  <section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item">
+          <video poster="" id="1" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/atc4_render_cam_36.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" id="2" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/atc2_render_cam_45.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" id="3" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/def2_render_cam_39.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" id="4-tp" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/atc3_render_cam_0.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" id="5" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/int1_render_cam_9.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{10.1145/3731214,
+  author = {Huang, Junkai and Subhajyoti Mallick, Saswat and Amat, Alejandro and Ruiz Olle, Marc and Mosella-Montoro, Albert and Kerbl, Bernhard and Vicente Carrasco, Francisco and De la Torre, Fernando},
+  title = {Echoes of the Coliseum: Towards 3D Live streaming of Sports Events},
+  year = {2025},
+  issue_date = {August 2025},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {44},
+  number = {4},
+  issn = {0730-0301},
+  url = {https://doi.org/10.1145/3731214},
+  doi = {10.1145/3731214},
+  journal = {ACM Trans. Graph.},
+  month = jul,
+  articleno = {46},
+  numpages = {17},
+  keywords = {sports events, human-centric events, gaussian splatting, real-time 3D reconstruction}
+}
+
+</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer" style="padding:0.75rem 1.5rem">
+  <div class="container">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-20">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> who kindly open sourced the template of this website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

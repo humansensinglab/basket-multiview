@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="BASKET-Multiview Dataset: Basketball Synthetic Benchmark for Enhanced Telepresence">
+  <meta name="keywords" content="Dynamic 3D Dataset, Human-Centric Dataset, Basketball, Gaussian Splatting, Benchmark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BASKET-Multiview Dataset</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <style>
+    #downloadSection {
+      display: none;
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .leaderboard-table th {
+      background-color: #363636;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+    
+    .leaderboard-table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .leaderboard-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .dataset-stats {
+      background-color: #f5f5f5;
+      padding: 2rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .stat-box {
+      text-align: center;
+      padding: 1rem;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #363636;
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      color: #666;
+    }
+    .countdown-section {
+      background-color: #3273dc;
+      color: white;
+      padding: 3rem 1.5rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .countdown-unit {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      min-width: 100px;
+    }
+    
+    .countdown-number {
+      font-size: 3rem;
+      font-weight: bold;
+      display: block;
+    }
+    
+    .countdown-label {
+      font-size: 1rem;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+    
+    .countdown-message {
+      font-size: 1.2rem;
+      margin-top: 2rem;
+      line-height: 1.6;
+    }
+    
+    .countdown-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">BASKET-Multiview Dataset</h1>
+          
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">The next 4D Human-Centric Benchmark</span>
+          </div>
+
+          <br/>
+    
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Home Link. -->
+              <span class="link-block">
+                <a href="index.html"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-home"></i>
+                  </span>
+                  <span>Home</span>
+                  </a>
+                </span>
+              <!-- Challenge Link. -->
+              <!-- <span class="link-block">
+                <a href="https://eval.ai"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-bullseye"></i>
+                  </span>
+                  <span>Participate</span>
+                  </a>
+                </span> -->
+              <!-- Leaderboard Link. -->
+              <!-- <span class="link-block">
+                <a href="https://eval.ai"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-trophy"></i>
+                  </span>
+                  <span>Leaderboard</span>
+                  </a>
+                </span> -->
+              <!-- License Link. -->
+              <!-- <span class="link-block">
+                <a href="https://eval.ai"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-file"></i>
+                  </span>
+                  <span>License</span>
+                  </a>
+                </span> -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="content has-text-justified">
+          <p>
+            We introduce the BASKET (<b>BA</b>sketball <b>S</b>ynthetic benchmar<b>K</b> for <b>E</b>nhanced <b>T</b>elepresence)-Multiview Dataset, a synthetic collection of scenarios representing common basketball plays generated using Unreal Engine 5 and EasySynth. For each scene, we provide comprehensive annotations that include calibrated cameras parameters, animations, RGB images, segmentation masks, depth maps, surface normal images, SMPL meshes and animations. All scenes are rendered at 1080p/4K and 30 fps.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Countdown Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="countdown-section">
+          <div class="countdown-title">Dataset will be available to download in...</div>
+          <div class="countdown-timer" id="countdown">
+            <div class="countdown-unit">
+              <span class="countdown-number" id="days">--</span>
+              <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-number" id="hours">--</span>
+              <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-number" id="minutes">--</span>
+              <span class="countdown-label">Minutes</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-number" id="seconds">--</span>
+              <span class="countdown-label">Seconds</span>
+            </div>
+          </div>
+          <div class="countdown-message">
+            We're finalizing the download infrastructure for this dataset and appreciate your patience.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="hero-body">
+          <img src="./static/images/dataset_multimodal.png"
+               class="interpolation-image"
+               alt="Dataset Overview"
+               width="100%"/>
+          <h2 class="subtitle has-text-centered">
+            BASKET provides multi-modal annotations including RGB images, depth maps, segmentation masks, surface normals, and SMPL meshes for dynamic basketball scenes.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    
+    <!-- Dataset Overview -->
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Why BASKET-Multiview?</h2>
+        <div class="content has-text-justified">
+          <p>
+            The lack of comprehensive dynamic 3D datasets focusing on human-centric events has been a significant bottleneck in advancing real-time 3D reconstruction and telepresence technologies. Existing datasets either focus on static scenes, lack multi-view coverage, or provide insufficient ground truth annotations for rigorous evaluation.
+          </p>
+          <p>
+            BASKET addresses these limitations by providing a high-quality synthetic benchmark specifically designed for evaluating dynamic human-centric 3D reconstruction methods. Our dataset features realistic basketball gameplay scenarios with comprehensive multi-modal annotations, making it an ideal testbed for algorithms targeting live sports streaming and immersive viewing experiences.
+          </p>
+          <p>
+            We envision BASKET becoming the standard benchmark for evaluating dynamic 3D reconstruction methods, particularly those focusing on human activities and real-time performance requirements.
+            <br>
+            <br>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dataset Statistics -->
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Dataset Statistics</h2>
+        <div class="dataset-stats">
+          <div class="columns">
+            <div class="column stat-box">
+              <div class="stat-number">89</div>
+              <div class="stat-label">Camera Views</div>
+            </div>
+            <div class="column stat-box">
+              <div class="stat-number">7</div>
+              <div class="stat-label">Full plays</div>
+            </div>
+            <div class="column stat-box">
+              <div class="stat-number">2</div>
+              <div class="stat-label">Scenarios</div>
+            </div>
+            <div class="column stat-box">
+              <div class="stat-number">9K+</div>
+              <div class="stat-label">Total Frames</div>
+            </div>
+            <div class="column stat-box">
+              <div class="stat-number">1080p/4K</div>
+              <div class="stat-label">Resolution</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dataset Contents -->
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">What's Included</h2>
+        <div class="content">
+          <div class="columns is-multiline">
+            <div class="column is-half">
+              <h4 class="title is-5">Visual Data</h4>
+              <ul>
+                <li><strong>RGB Images:</strong> High-quality images from all cameras</li>
+                <li><strong>Depth Maps:</strong> Accurate depth information for each frame</li>
+                <li><strong>Segmentation:</strong> Per-player and object masks</li>
+                <li><strong>Normals:</strong> Geometric surface information</li>
+              </ul>
+            </div>
+            <div class="column is-half">
+              <h4 class="title is-5">3D Annotations</h4>
+              <ul>
+                <li><strong>Camera Parameters:</strong> Full calibration data for all views</li>
+                <li><strong>SMPL Meshes:</strong> Accurate 3D human body models</li>
+                <li><strong>Animations:</strong> Full motion capture data</li>
+                <li><strong>Artefacts:</strong> SFM and per-frame 3DGS pointclouds</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge Section -->
+    <!-- <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="has-text-centered">
+          <h2 class="title is-3">BASKET Challenge</h2>
+        </div>
+        <br/>
+        <div class="content has-text-justified">
+            <p>
+            We are hosting the BASKET Challenge to encourage the development of novel methods for dynamic 3D reconstruction. The challenge focuses on evaluating methods across two major scenarios:
+            </p>
+            <ul style="text-align: left;">
+                <li><strong>Interpolation trajectories:</strong> Novel views computed by interpolation of training camera extrinsics</li>
+                <li><strong>VR trajectories:</strong> Synthetic views that mimic viewers' gaze</li>
+            </ul>
+            <p>
+                For more details on the split, submission guidelines and evalution criteria, please visit our <a href="https://eval.ai/web/challenges/challenge-page/2xxx/">EvalAI challenge page</a>. Winners will be invited to present their methods at a future conference workshop.
+                <br>
+                <br>
+            </p>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Leaderboard Section -->
+    <!-- <div class="columns is-centered" id="leaderboard">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Leaderboard</h2>
+        <div class="content">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Method</th>
+                <th>Team</th>
+                <th>PSNR ↑</th>
+                <th>SSIM ↑</th>
+                <th>LPIPS ↓</th>
+                <th>FPS ↑</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><strong>LiveSplats (Ours)</strong></td>
+                <td>CMU</td>
+                <td><strong>32.45</strong></td>
+                <td><strong>0.943</strong></td>
+                <td><strong>0.042</strong></td>
+                <td>30</td>
+                <td>2025-01-15</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Baseline Method A</td>
+                <td>Anonymous</td>
+                <td>29.87</td>
+                <td>0.912</td>
+                <td>0.068</td>
+                <td><strong>45</strong></td>
+                <td>2025-01-12</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Baseline Method B</td>
+                <td>Anonymous</td>
+                <td>28.34</td>
+                <td>0.895</td>
+                <td>0.082</td>
+                <td>25</td>
+                <td>2025-01-10</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+</section> -->
+
+<!-- Download Section -->
+<!-- <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full">
+          <h2 class="title is-3 has-text-centered">Download Dataset</h2>
+          <div class="content has-text-justified">
+            <p>To request the dataset, please ask your group leader/PI to sign the downloaded release form, scan it and email it to smallick@andrew.cmu.edu along with their name, title and organisation. We note that both the form and the email should come from the group leader that has a permanent position at the corresponding institution.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+</section> -->
+
+  </div>
+</section>
+
+<script>
+  const countDownDate = new Date("2025-08-12T00:00:00Z").getTime(); // August 12, 2025 at midnight UTC
+  
+  let countdownTimer;
+  
+  function updateCountdown() {
+    const now = new Date().getTime();
+    
+    const distance = countDownDate - now;
+    
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+    if (distance > 0) {
+      document.getElementById("days").innerHTML = days;
+      document.getElementById("hours").innerHTML = hours;
+      document.getElementById("minutes").innerHTML = minutes;
+      document.getElementById("seconds").innerHTML = seconds;
+    } else {
+      clearInterval(countdownTimer);
+      document.getElementById("countdown").innerHTML = "<div style='font-size: 2rem; padding: 2rem;'>The dataset is now available for download!</div>";
+    }
+  }
+  
+  updateCountdown();
+  countdownTimer = setInterval(updateCountdown, 1000);
+</script>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{10.1145/3731214,
+  author = {Huang, Junkai and Subhajyoti Mallick, Saswat and Amat, Alejandro and Ruiz Olle, Marc and Mosella-Montoro, Albert and Kerbl, Bernhard and Vicente Carrasco, Francisco and De la Torre, Fernando},
+  title = {Echoes of the Coliseum: Towards 3D Live streaming of Sports Events},
+  year = {2025},
+  issue_date = {August 2025},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {44},
+  number = {4},
+  issn = {0730-0301},
+  url = {https://doi.org/10.1145/3731214},
+  doi = {10.1145/3731214},
+  journal = {ACM Trans. Graph.},
+  month = jul,
+  articleno = {46},
+  numpages = {17},
+  keywords = {sports events, human-centric events, gaussian splatting, real-time 3D reconstruction}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a
+            href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> who kindly open sourced the template of this website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
