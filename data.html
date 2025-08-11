@@ -549,50 +549,126 @@
 </section>
 
 <script>
-  // List of personal email domains to block
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxehW5XzGojeaRDn042ylwCvgoW6S1Wflb5eNT3Bl7mcMjP1bon4CLPCMLr0cF8Rm8/exec';
+  
   const personalEmailDomains = [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
-    'icloud.com', 'mail.com', 'protonmail.com', 'yandex.com', 'zoho.com',
-    'gmx.com', 'fastmail.com', 'tutanota.com', 'me.com', 'live.com',
-    'msn.com', 'qq.com', '163.com', '126.com', 'sina.com'
+    'icloud.com', 'mail.com', 'protonmail.com', 'yandex.com', 'zoho.com'
   ];
   
-  document.getElementById('downloadForm').addEventListener('submit', function(e) {
+  async function submitToGoogleSheet(formData) {
+    console.log('Starting submission with data:', formData);
+    
+    try {
+      const params = new URLSearchParams();
+      params.append('fullName', formData.fullName);
+      params.append('email', formData.email);
+      params.append('affiliation', formData.affiliation);
+      params.append('termsAccepted', formData.termsAccepted);
+      params.append('purpose', formData.purpose || 'Not specified');
+      
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: params.toString(),
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      console.log('Submitted');
+    } catch (error) {
+      console.error('Submission failed:', error);
+    }
+    
+    return { success: true };
+  }
+  
+  // Validate email domain
+  function validateEmailDomain(email) {
+    const domain = email.split('@')[1];
+    
+    if (personalEmailDomains.includes(domain)) {
+      return {
+        valid: false,
+        message: 'Please use an institutional or company email address.'
+      };
+    }
+    
+    return { valid: true };
+  }
+  
+  // Form submission handler
+  document.getElementById('downloadForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    // Get elements
     const email = document.getElementById('email').value.toLowerCase();
     const emailError = document.getElementById('emailError');
     const successMessage = document.getElementById('successMessage');
+    const submitButton = document.getElementById('submitButton');
     
     // Reset messages
     emailError.style.display = 'none';
     successMessage.style.display = 'none';
     
-    // Extract domain from email
-    const domain = email.split('@')[1];
-    
-    // Check if it's a personal email
-    if (personalEmailDomains.includes(domain)) {
-      emailError.textContent = 'Please use an institutional or company email address. Personal email addresses are not accepted.';
+    // Validate email domain
+    const emailValidation = validateEmailDomain(email);
+    if (!emailValidation.valid) {
+      emailError.textContent = emailValidation.message;
       emailError.style.display = 'block';
       return;
     }
     
-    // Additional check for common patterns
-    if (domain.includes('mail') && !domain.includes('.edu') && !domain.includes('.org') && !domain.includes('.gov')) {
-      emailError.textContent = 'This appears to be a personal email domain. Please use your institutional or company email.';
-      emailError.style.display = 'block';
-      return;
-    }
+    // Show loading state
+    submitButton.disabled = true;
+    submitButton.textContent = 'Processing...';
     
-    // If validation passes, show success message
+    // Collect form data - ensure all values are strings
+    const formData = {
+      fullName: document.getElementById('fullName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      affiliation: document.getElementById('affiliation').value.trim(),
+      termsAccepted: document.getElementById('termsCheckbox').checked ? 'true' : 'false',
+      purpose: document.getElementById('purpose')?.value?.trim() || 'Not specified'
+    };
+    
+    
+    // Submit to Google Sheet
+    await submitToGoogleSheet(formData);
+    
+    // Wait a bit to ensure request is sent
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Reset button
+    submitButton.disabled = false;
+    submitButton.textContent = 'Request Access';
+    
+    // Show success message
     successMessage.style.display = 'block';
     
-    // Optionally, you can scroll to the success message
+    // Clear form
+    document.getElementById('downloadForm').reset();
+    submitButton.style.display = 'none';
+    
+    // Scroll to success message
     successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
   
-  // Function to check if all fields are filled
+  // Test function
+  window.testDirectSubmit = async function() {
+    const testData = {
+      fullName: 'Direct Test User',
+      email: 'direct@university.edu',
+      affiliation: 'Direct Test University',
+      termsAccepted: 'true',
+      purpose: 'Direct test submission'
+    };
+    
+    await submitToGoogleSheet(testData);
+    alert('Test data sent! Check your Google Sheet.');
+  };
+  
+  // Form completion checker
   function checkFormCompletion() {
     const fullName = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -607,41 +683,12 @@
     }
   }
   
-  // Add event listeners to all form fields
+  // Add event listeners
   document.getElementById('fullName').addEventListener('input', checkFormCompletion);
   document.getElementById('email').addEventListener('input', checkFormCompletion);
   document.getElementById('affiliation').addEventListener('input', checkFormCompletion);
   document.getElementById('termsCheckbox').addEventListener('change', checkFormCompletion);
-</script>
-
-<script>
-  const countDownDate = new Date("2025-08-11T18:35:00Z").getTime(); // August 12, 2025 at midnight UTC
   
-  let countdownTimer;
-  
-  function updateCountdown() {
-    const now = new Date().getTime();
-    
-    const distance = countDownDate - now;
-    
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    
-    if (distance > 0) {
-      document.getElementById("days").innerHTML = days;
-      document.getElementById("hours").innerHTML = hours;
-      document.getElementById("minutes").innerHTML = minutes;
-      document.getElementById("seconds").innerHTML = seconds;
-    } else {
-      clearInterval(countdownTimer);
-      document.getElementById("countdown").innerHTML = "<div style='font-size: 2rem; padding: 2rem;'>The dataset is now available for download!</div>";
-    }
-  }
-  
-  updateCountdown();
-  countdownTimer = setInterval(updateCountdown, 1000);
 </script>
 
 <section class="section" id="BibTeX">
