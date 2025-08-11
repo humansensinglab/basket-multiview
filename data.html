@@ -40,6 +40,14 @@
   <script src="./static/js/index.js"></script>
 
   <style>
+    .section {
+      padding: 3rem 1.5rem;
+    }
+    
+    .container {
+      margin: 0 auto;
+    }
+
     #downloadSection {
       display: none;
     }
@@ -134,6 +142,32 @@
       font-weight: bold;
       margin-bottom: 1rem;
     }
+
+    /* Form styles */
+    .download-form {
+      background-color: #f5f5f5;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    
+    .success-message {
+      background-color: #48c774;
+      color: white;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .error-message {
+      background-color: #f14668;
+      color: white;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -164,6 +198,36 @@
                   <span>Home</span>
                   </a>
                 </span>
+              <!-- Newspaper Link. -->
+              <span class="link-block">
+                <a href="https://www.growkudos.com/publications/10.1145%25252F3731214/reader"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-newspaper"></i>
+                  </span>
+                  <span>Kudos</span>
+                </a>
+              </span>
+              <!-- Browse. -->
+              <span class="link-block">
+                <a href="https://datastore.shannon.humansensing.cs.cmu.edu/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-search"></i>
+                  </span>
+                  <span>Browse</span>
+                </a>
+              </span>
+              <!-- search. -->
+              <span class="link-block">
+                <a href="#download_section"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-download"></i>
+                  </span>
+                  <span>Download</span>
+                </a>
+              </span>
               <!-- Challenge Link. -->
               <!-- <span class="link-block">
                 <a href="https://eval.ai"
@@ -185,15 +249,15 @@
                   </a>
                 </span> -->
               <!-- License Link. -->
-              <!-- <span class="link-block">
-                <a href="https://eval.ai"
+              <span class="link-block">
+                <a href="static/docs/LICENSE.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                     <i class="fas fa-file"></i>
                   </span>
                   <span>License</span>
-                  </a>
-                </span> -->
+                </a>
+              </span>
             </div>
           </div>
 
@@ -450,8 +514,142 @@
   </div>
 </section>
 
+<section class="section">
+  <div class="container is-max-desktop" id="download_section">
+    <!-- Download Section -->
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Download Dataset</h2>
+        <p class="has-text-centered">To request access to the dataset, please complete the form below using an official institutional or company email address.</p>
+        
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="download-form">
+              <form id="downloadForm">
+                <div class="field">
+                  <label class="label">Full Name<span style="color: red;"> *</span></label>
+                  <div class="control">
+                    <input class="input" type="text" id="fullName" placeholder="John Doe" required>
+                  </div>
+                </div>
+                
+                <div class="field">
+                  <label class="label">Email<span style="color: red;"> *</span></label>
+                  <div class="control">
+                    <input class="input" type="email" id="email" placeholder="john.doe@university.edu" required>
+                  </div>
+                  <p class="help">Please use your institutional or company email address</p>
+                  <div class="error-message" id="emailError"></div>
+                </div>
+                
+                <div class="field">
+                  <label class="label">Affiliation<span style="color: red;"> *</span></label>
+                  <div class="control">
+                    <input class="input" type="text" id="affiliation" placeholder="University of Example / Company Name" required>
+                  </div>
+                </div>
+                
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input type="checkbox" id="termsCheckbox" required>
+                      I have read and agree to the <a href="static/docs/LICENSE.pdf" target="_blank">license</a>
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="field">
+                  <div class="control">
+                    <button class="button is-primary is-fullwidth" type="submit" id="submitButton" style="display: none;">Request Access</button>
+                  </div>
+                </div>
+              </form>
+              
+              <div class="success-message" id="successMessage">
+                Thank you for your interest in our work!<br>
+                <br>
+                You can now <a href="https://datastore.shannon.humansensing.cs.cmu.edu/api/public/dl/3gdyvt0N/">download</a> the full dataset or <a href="https://datastore.shannon.humansensing.cs.cmu.edu/">browse/partially download</a> using the following credentials.
+                <br>
+                <br>
+                <strong>Username:</strong> <code>basket_multiview</code><br>
+                <strong>Password:</strong> <code>&]03~09lFk+l</code><br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
-  const countDownDate = new Date("2025-08-12T00:00:00Z").getTime(); // August 12, 2025 at midnight UTC
+  // List of personal email domains to block
+  const personalEmailDomains = [
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+    'icloud.com', 'mail.com', 'protonmail.com', 'yandex.com', 'zoho.com',
+    'gmx.com', 'fastmail.com', 'tutanota.com', 'me.com', 'live.com',
+    'msn.com', 'qq.com', '163.com', '126.com', 'sina.com'
+  ];
+  
+  document.getElementById('downloadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.toLowerCase();
+    const emailError = document.getElementById('emailError');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Reset messages
+    emailError.style.display = 'none';
+    successMessage.style.display = 'none';
+    
+    // Extract domain from email
+    const domain = email.split('@')[1];
+    
+    // Check if it's a personal email
+    if (personalEmailDomains.includes(domain)) {
+      emailError.textContent = 'Please use an institutional or company email address. Personal email addresses are not accepted.';
+      emailError.style.display = 'block';
+      return;
+    }
+    
+    // Additional check for common patterns
+    if (domain.includes('mail') && !domain.includes('.edu') && !domain.includes('.org') && !domain.includes('.gov')) {
+      emailError.textContent = 'This appears to be a personal email domain. Please use your institutional or company email.';
+      emailError.style.display = 'block';
+      return;
+    }
+    
+    // If validation passes, show success message
+    successMessage.style.display = 'block';
+    
+    // Optionally, you can scroll to the success message
+    successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  
+  // Function to check if all fields are filled
+  function checkFormCompletion() {
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const affiliation = document.getElementById('affiliation').value.trim();
+    const termsChecked = document.getElementById('termsCheckbox').checked;
+    const submitButton = document.getElementById('submitButton');
+    
+    if (fullName && email && affiliation && termsChecked) {
+      submitButton.style.display = 'block';
+    } else {
+      submitButton.style.display = 'none';
+    }
+  }
+  
+  // Add event listeners to all form fields
+  document.getElementById('fullName').addEventListener('input', checkFormCompletion);
+  document.getElementById('email').addEventListener('input', checkFormCompletion);
+  document.getElementById('affiliation').addEventListener('input', checkFormCompletion);
+  document.getElementById('termsCheckbox').addEventListener('change', checkFormCompletion);
+</script>
+
+<script>
+  const countDownDate = new Date("2025-08-11T18:05:00Z").getTime(); // August 12, 2025 at midnight UTC
   
   let countdownTimer;
   
