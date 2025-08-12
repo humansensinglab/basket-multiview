@@ -195,26 +195,6 @@
                   <span>Home</span>
                   </a>
                 </span>
-              <!-- Newspaper Link. -->
-              <span class="link-block">
-                <a href="https://www.growkudos.com/publications/10.1145%25252F3731214/reader"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-newspaper"></i>
-                  </span>
-                  <span>Kudos</span>
-                </a>
-              </span>
-              <!-- Browse. -->
-              <span class="link-block">
-                <a href="https://datastore.shannon.humansensing.cs.cmu.edu/"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-search"></i>
-                  </span>
-                  <span>Browse</span>
-                </a>
-              </span>
               <!-- search. -->
               <span class="link-block">
                 <a href="#download_section"
@@ -270,7 +250,7 @@
       <div class="column is-full">
         <div class="content has-text-justified">
           <p>
-            We introduce the BASKET (<b>BA</b>sketball <b>S</b>ynthetic benchmar<b>K</b> for <b>E</b>nhanced <b>T</b>elepresence)-Multiview Dataset, a synthetic collection of scenarios representing common basketball plays generated using Unreal Engine 5 and EasySynth. For each scene, we provide comprehensive annotations that include calibrated cameras parameters, animations, RGB images, segmentation masks, depth maps, surface normal images, SMPL meshes and animations. All scenes are rendered at 1080p/4K and 30 fps.
+            We introduce the BASKET (<b>BA</b>sketball <b>S</b>ynthetic benchmar<b>K</b> for <b>E</b>nhanced <b>T</b>elepresence)-Multiview Dataset, a synthetic collection of scenarios representing common basketball plays generated using Unreal Engine 5 and <a href="https://github.com/ydrive/EasySynth">EasySynth</a>. For each scene, we provide comprehensive annotations that include calibrated cameras parameters, animations, RGB images, segmentation masks, depth maps, surface normal images, SMPL meshes and animations. All scenes are rendered at 1080p/4K and 30 fps.
           </p>
         </div>
       </div>
@@ -687,6 +667,24 @@
   document.getElementById('termsCheckbox').addEventListener('change', checkFormCompletion);
   
 </script>
+
+<section class="section" id="Assets">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Environment Assets</h2>
+    <div class="content has-text-justified">
+      <p>
+        The BASKET-Multiview dataset was created using high-quality 3D assets purchased from various marketplace vendors. While we cannot redistribute these assets directly due to licensing restrictions, researchers interested in recreating or extending our environment can obtain them from their original sources:
+      </p>
+      <ul>
+        <li><a href="https://www.fab.com/listings/03e76034-abbf-4fc2-aa05-b025996eeb1d">Basketball Court Environment</a></li>
+        <li><a href="https://www.fab.com/listings/2eebf211-df72-4daf-a8c4-24bfadba9e7a">Character Models</a></li>
+      </ul>
+      <p>
+        Please note that purchasing these assets separately may be required to fully recreate the environment shown in our dataset. We recommend checking the individual license terms from each vendor for your intended use case.
+      </p>
+    </div>
+  </div>
+</section>
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
