@@ -33,6 +33,7 @@ We release the BASKET-Multiview Reconstruction Challenge that evaluates 4D recon
 <p align="center">
     <img src="assets/method.png" width="900px"/>
 </p>
+For improving background optimization speeds, we precompute and freeze the geometry of Gaussians and use CPU-detached CUDA graphs for asynchronous execution. Furthermore, we redistribute the tasks per thread to reduce overall idle time and boost overall resource utilization. These optimizations help us converge 3x faster than current/concurrent state of art methods.
 
 
 ## :microscope: Citation
