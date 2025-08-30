@@ -25,7 +25,9 @@ The instructions for downloading are outlined in our [webpage](https://humansens
 The SMPL meshes are obtained by fitting to the ground truth skeleton, and might not be perfect. Since we cannot redistribute the original character assets due to licensing restrictions, researchers interested in perfect meshes can obtain them from their original [source](https://www.fab.com/listings/2eebf211-df72-4daf-a8c4-24bfadba9e7a).
 
 ## :checkered_flag: Challenge
-We release the BASKET-Multiview Reconstruction Challenge that evaluates 4D reconstruction methods on their ability to reconstruct dynamic scenes from multi-view observations. Participants will work with the released game sequences and reconstruct using the test cameras. For submission instructions and detailed evaluation policies, please refer to our [competition page](https://challenge.shannon.humansensing.cs.cmu.edu/web/challenges/challenge-page/21/overview).
+We release the BASKET-Multiview Reconstruction Challenge that evaluates 4D reconstruction methods on their ability to reconstruct dynamic scenes from multi-view observations. Participants will work with the released game sequences and reconstruct using the test cameras. For submission instructions and detailed evaluation policies, please refer to our [competition page](https://challenge.shannon.humansensing.cs.cmu.edu/web/challenges/challenge-page/21/overview). 
+
+To prepare a submission file, please use the evaluation script in the [challenge](./challenge/) directory, zip the results and upload it in the competition page.
 
 
 ## :crystal_ball: Method
