@@ -1,0 +1,11 @@
+build/
+*.egg-info/
+out.txt
+__pycache__/
+*.pyc
+dist/
+__pycache__/
+output/
+*.txt
+*.pyc
+.vscode/
