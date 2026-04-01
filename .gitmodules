@@ -1,0 +1,12 @@
+[submodule "livesplats/submodules/diff-gaussian-rasterization-accelerated"]
+	path = livesplats/submodules/diff-gaussian-rasterization-accelerated
+	url = https://github.com/humansensinglab/diff-gaussian-rasterization-accelerated.git
+[submodule "livesplats/submodules/diff-gaussian-rasterization"]
+	path = livesplats/submodules/diff-gaussian-rasterization
+	url = https://github.com/graphdeco-inria/diff-gaussian-rasterization.git
+[submodule "livesplats/submodules/fused-ssim"]
+	path = livesplats/submodules/fused-ssim
+	url = https://github.com/rahul-goel/fused-ssim.git
+[submodule "livesplats/submodules/simple-knn"]
+	path = livesplats/submodules/simple-knn
+	url = https://gitlab.inria.fr/bkerbl/simple-knn.git
