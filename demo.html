@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stadium Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; font-family: system-ui, sans-serif; color: #eee; }
+
+    canvas { position: fixed; inset: 0; width: 100% !important; height: 100% !important; }
+
+    #ui {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .play-btn {
+      pointer-events: all;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #ccc; padding: 5px 14px;
+      border-radius: 6px; cursor: pointer;
+      font-size: 13px; transition: background 0.12s;
+      user-select: none;
+    }
+    .play-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+    .play-btn.active { background: rgba(59,130,246,0.65); border-color: rgba(96,165,250,0.8); color: #fff; }
+
+    #status { margin-left: auto; font-size: 12px; color: rgba(255,255,255,0.45); }
+
+    #loading {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.92);
+      transition: opacity 0.5s;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+    #load-msg { font-size: 15px; margin-bottom: 14px; color: #ccc; }
+    #load-bar-wrap { width: 220px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+    #load-bar-fill { height: 100%; width: 0; background: #3b82f6; border-radius: 2px; transition: width 0.12s; }
+
+    #hint {
+      position: fixed; bottom: 10px; left: 14px; z-index: 5;
+      font-size: 11px; line-height: 2; color: rgba(255,255,255,0.35);
+      pointer-events: none;
+    }
+    #hint kbd {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 3px; padding: 1px 5px; font-size: 10px;
+    }
+
+    #stats {
+      position: fixed; bottom: 10px; right: 14px; z-index: 5;
+      font-size: 11px; line-height: 1.7; text-align: right;
+      color: rgba(255,255,255,0.3); pointer-events: none;
+    }
+
+    #buf-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 5;
+      height: 2px; background: transparent; pointer-events: none;
+    }
+    #buf-fill { height: 100%; width: 0; background: rgba(59,130,246,0.5); transition: width 0.2s; }
+  </style>
+</head>
+<body>
+
+  <div id="loading">
+    <div id="load-msg">Loading stadium background...</div>
+    <div id="load-bar-wrap"><div id="load-bar-fill"></div></div>
+  </div>
+
+  <div id="ui">
+    <button class="play-btn" data-play="atc_1">ATC 1</button>
+    <button class="play-btn" data-play="atc_2">ATC 2</button>
+    <!-- <button class="play-btn" data-play="atc_3">ATC 3</button>
+    <button class="play-btn" data-play="def_1">DEF 1</button>
+    <button class="play-btn" data-play="def_2">DEF 2</button> -->
+    <button class="play-btn" data-play="int_1">INT 1</button>
+    <div id="status">Loading background…</div>
+  </div>
+
+  <div id="hint">
+    <kbd>Drag</kbd> Look &nbsp;·&nbsp;
+    <kbd>Scroll</kbd> Zoom &nbsp;·&nbsp;
+    <kbd>WASD</kbd> Move &nbsp;·&nbsp;
+    <kbd>Q / E</kbd> Up / Down &nbsp;·&nbsp;
+    <kbd>Space</kbd> Pause &nbsp;·&nbsp;
+    <kbd>R</kbd> Reset
+  </div>
+
+  <div id="stats"></div>
+
+  <div id="buf-wrap"><div id="buf-fill"></div></div>
+
+  <script type="importmap">
+    { "imports": { "three": "./static/js/three.module.min.js", "@sparkjsdev/spark": "./static/js/spark.module.min.js" } }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { SparkRenderer, SplatMesh, SparkXr } from "@sparkjsdev/spark";
+
+    const BASE_URL = "https://huggingface.co/datasets/saswat72444/basket-artifacts/resolve/main";
+    const BG_URL = `${BASE_URL}/stadium_bg_new_clean.ply`;
+    const PLAYS = {
+      atc_1: 320,
+      atc_2: 130,
+      atc_3: 227,
+      def_1: 135,
+      def_2: 229,
+      int_1: 185,
+    };
+    const TARGET_FPS = 24;
+    const POOL_SIZE = 6;
+    const MIN_BUFFER = 4;
+    const BG_SCALE = 1 / 100;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 5000);
+    camera.position.set(-9, 5, 10);
+
+    const localFrame = new THREE.Group();
+    scene.add(localFrame);
+    localFrame.add(camera);
+
+    const spark = new SparkRenderer({ renderer });
+    scene.add(spark);
+
+    // COLMAP is Y-down Z-forward; rotate 180° around X to get Y-up Z-backward for WebXR
+    const contentGroup = new THREE.Group();
+    contentGroup.rotation.x = -Math.PI / 2;
+    scene.add(contentGroup);
+
+    const bgMesh = new SplatMesh({
+      url: BG_URL,
+      onLoad: () => {
+        hideLoading();
+        setStatus("Select a play above");
+      },
+    });
+    bgMesh.frustumCulled = false;
+    bgMesh.scale.setScalar(BG_SCALE);
+    contentGroup.add(bgMesh);
+
+    const xr = new SparkXr({
+      renderer,
+      mode: "vr",
+      allowMobileXr: true,
+      controllers: { moveHeading: true, moveSpeed: 10 },
+      onEnterXr: () => { localFrame.position.set(-9, 5, 10); },
+    });
+
+    let isDragging = false, lastX = 0, lastY = 0;
+    let camYaw = 0, camPitch = 0;
+
+    function applyLook(dx, dy) {
+      const SENS = 0.003;
+      camYaw -= dx * SENS;
+      camPitch = Math.max(-1.5, Math.min(1.5, camPitch - dy * SENS));
+      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
+      const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), camPitch);
+      camera.quaternion.copy(qY).multiply(qX);
+    }
+
+    renderer.domElement.addEventListener("mousedown", e => {
+      isDragging = true; lastX = e.clientX; lastY = e.clientY;
+    });
+    window.addEventListener("mousemove", e => {
+      if (!isDragging) return;
+      applyLook(e.clientX - lastX, e.clientY - lastY);
+      lastX = e.clientX; lastY = e.clientY;
+    });
+    window.addEventListener("mouseup", () => { isDragging = false; });
+
+    renderer.domElement.addEventListener("touchstart", e => {
+      if (e.touches.length !== 1) return;
+      isDragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+    }, { passive: true });
+    renderer.domElement.addEventListener("touchmove", e => {
+      if (!isDragging || e.touches.length !== 1) return;
+      e.preventDefault();
+      applyLook(e.touches[0].clientX - lastX, e.touches[0].clientY - lastY);
+      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+    }, { passive: false });
+    renderer.domElement.addEventListener("touchend", () => { isDragging = false; });
+
+    renderer.domElement.addEventListener("wheel", e => {
+      e.preventDefault();
+      const fwd = new THREE.Vector3();
+      camera.getWorldDirection(fwd);
+      camera.position.addScaledVector(fwd, -e.deltaY * 0.3);
+    }, { passive: false });
+
+    const keys = {};
+    window.addEventListener("keydown", e => {
+      switch (e.code) {
+        case "KeyR": resetCamera(); return;
+        case "Space": togglePause(); e.preventDefault(); return;
+      }
+      keys[e.code] = true;
+    });
+    window.addEventListener("keyup", e => { keys[e.code] = false; });
+
+    function resetCamera() {
+      camera.position.set(-9, 5, 10);
+      camYaw = 0; camPitch = 0;
+      applyLook(0, 0);
+    }
+
+    const _fwd = new THREE.Vector3();
+    const _right = new THREE.Vector3();
+    function applyMovement() {
+      if (renderer.xr.isPresenting) return;
+      const SPEED = keys.ShiftLeft || keys.ShiftRight ? 5.0 : 1.0;
+      camera.getWorldDirection(_fwd);
+      _right.set(1, 0, 0).applyQuaternion(camera.quaternion);
+      if (keys.KeyW) camera.position.addScaledVector(_fwd, SPEED);
+      if (keys.KeyS) camera.position.addScaledVector(_fwd, -SPEED);
+      if (keys.KeyA) camera.position.addScaledVector(_right, -SPEED);
+      if (keys.KeyD) camera.position.addScaledVector(_right, SPEED);
+      if (keys.KeyQ) camera.position.y += SPEED;
+      if (keys.KeyE) camera.position.y -= SPEED;
+    }
+
+    let pool = makePool();
+    let frameBuffers = [];
+    let currentPlay = null;
+    let frameCount = 0;
+    let currentFrame = -1;
+    let nextLoadFrame = 0;
+    let activeMesh = null;
+    let lastFrameTime = -Infinity;
+    let isPlaying = false;
+    let isPaused = false;
+    let playGeneration = 0;
+
+    function makePool() {
+      return Array.from({ length: POOL_SIZE }, () => ({
+        mesh: null, frameIdx: -1, state: "EMPTY", blobUrl: null, cancelled: false,
+      }));
+    }
+
+    function getFrameUrl(play, n) {
+      return `${BASE_URL}/${play}/${String(n).padStart(4, "0")}.spz`;
+    }
+
+    function resetPool() {
+      for (const s of pool) {
+        s.cancelled = true;
+        if (s.blobUrl) { URL.revokeObjectURL(s.blobUrl); s.blobUrl = null; }
+        s.mesh = null;
+      }
+      pool = makePool();
+      nextLoadFrame = 0;
+    }
+
+    function startLoadSlot(slot, frameIdx) {
+      const gen = playGeneration;
+      slot.state = "DECODING";
+      slot.frameIdx = frameIdx;
+      slot.cancelled = false;
+      slot.blobUrl = URL.createObjectURL(new Blob([frameBuffers[frameIdx]]));
+      slot.mesh = new SplatMesh({
+        url: slot.blobUrl,
+        onLoad: () => {
+          if (!slot.cancelled && gen === playGeneration && slot.frameIdx === frameIdx) {
+            slot.state = "READY";
+          }
+        },
+      });
+    }
+
+    function fillPool() {
+      if (!isPlaying) return;
+      for (const slot of pool) {
+        if (slot.state === "EMPTY" && nextLoadFrame < frameCount) {
+          startLoadSlot(slot, nextLoadFrame++);
+        }
+      }
+    }
+
+    function tryAdvanceFrame(now) {
+      if (!isPlaying || isPaused) return;
+
+      const nextFrame = currentFrame < 0 ? 0 : currentFrame + 1;
+
+      if (nextFrame >= frameCount) {
+        playGeneration++;
+        resetPool();
+        currentFrame = -1;
+        lastFrameTime = now;
+        fillPool();
+        return;
+      }
+
+      if (currentFrame >= 0 && now - lastFrameTime < 1000 / TARGET_FPS) return;
+
+      const readyCount = pool.filter(s => s.state === "READY").length;
+      if (currentFrame < 0 && readyCount < MIN_BUFFER) return;
+
+      const slot = pool.find(s => s.state === "READY" && s.frameIdx === nextFrame);
+      if (!slot) return;
+
+      if (activeMesh) { contentGroup.remove(activeMesh); activeMesh.dispose(); }
+      activeMesh = slot.mesh;
+      activeMesh.frustumCulled = false;
+      activeMesh.scale.setScalar(1);
+      contentGroup.add(activeMesh);
+
+      currentFrame = nextFrame;
+      lastFrameTime = now;
+
+      slot.state = "EMPTY";
+      slot.mesh = null;
+      if (slot.blobUrl) { URL.revokeObjectURL(slot.blobUrl); slot.blobUrl = null; }
+      slot.frameIdx = -1;
+
+      fillPool();
+    }
+
+    async function loadPlay(playName) {
+      if (!PLAYS[playName]) return;
+
+      isPlaying = false;
+      const gen = ++playGeneration;
+      resetPool();
+      frameBuffers = [];
+      if (activeMesh) { contentGroup.remove(activeMesh); activeMesh.dispose(); activeMesh = null; }
+
+      currentPlay = playName;
+      frameCount = PLAYS[playName];
+
+      setActiveButton(playName);
+      setStatus(`Loading ${fmtPlay(playName)}…`);
+      showPlayLoading(playName, frameCount);
+
+      frameBuffers = new Array(frameCount).fill(null);
+      let loaded = 0;
+      await Promise.all(
+        Array.from({ length: frameCount }, (_, i) =>
+          fetch(getFrameUrl(playName, i))
+            .then(r => r.arrayBuffer())
+            .then(buf => {
+              if (gen !== playGeneration) return;
+              frameBuffers[i] = buf;
+              setPlayLoadProgress(++loaded / frameCount);
+            })
+        )
+      );
+
+      if (gen !== playGeneration) return;
+
+      hidePlayLoading();
+      currentFrame = -1;
+      lastFrameTime = -Infinity;
+      isPaused = false;
+      isPlaying = true;
+      fillPool();
+    }
+
+    function togglePause() {
+      if (!currentPlay) return;
+      isPaused = !isPaused;
+      updateStatus();
+    }
+
+    const loadingEl  = document.getElementById("loading");
+    const loadMsgEl  = document.getElementById("load-msg");
+    const loadFillEl = document.getElementById("load-bar-fill");
+    const statusEl   = document.getElementById("status");
+    const statsEl    = document.getElementById("stats");
+    const bufFillEl  = document.getElementById("buf-fill");
+
+    function hideLoading() { loadingEl.classList.add("hidden"); }
+    function setStatus(t)  { statusEl.textContent = t; }
+    function fmtPlay(p)    { return p.replace("_", " ").toUpperCase(); }
+
+    function showPlayLoading(playName, count) {
+      loadMsgEl.textContent = `Loading ${fmtPlay(playName)} (${count} frames)…`;
+      loadFillEl.style.width = "0%";
+      loadingEl.classList.remove("hidden");
+    }
+    function setPlayLoadProgress(pct) {
+      loadFillEl.style.width = `${(pct * 100).toFixed(0)}%`;
+    }
+    function hidePlayLoading() { loadingEl.classList.add("hidden"); }
+
+    function setActiveButton(play) {
+      document.querySelectorAll(".play-btn").forEach(b =>
+        b.classList.toggle("active", b.dataset.play === play)
+      );
+    }
+
+    function updateStatus() {
+      if (!currentPlay) return;
+      if (isPaused) {
+        setStatus(`${fmtPlay(currentPlay)} – paused`);
+      } else if (currentFrame < 0) {
+        setStatus(`Buffering ${fmtPlay(currentPlay)}…`);
+      } else {
+        setStatus(`${fmtPlay(currentPlay)} · ${currentFrame + 1} / ${frameCount}`);
+      }
+    }
+
+    document.querySelectorAll(".play-btn").forEach(btn => {
+      btn.addEventListener("click", () => loadPlay(btn.dataset.play));
+    });
+
+    const frameTimes = [];
+    function trackStats(now) {
+      frameTimes.push(now);
+      while (frameTimes.length > 0 && now - frameTimes[0] > 1000) frameTimes.shift();
+    }
+
+    let statsCounter = 0;
+    function updateStats(now) {
+      if (++statsCounter % 10 !== 0) return;
+      trackStats(now);
+
+      const renderFps = frameTimes.length;
+      const readyCount = pool.filter(s => s.state === "READY").length;
+      const decodingCount = pool.filter(s => s.state === "DECODING" || s.state === "FETCHING").length;
+
+      statsEl.textContent = `render ${renderFps} fps\nbuffered ${readyCount} / ${POOL_SIZE}`;
+      bufFillEl.style.width = `${(readyCount / POOL_SIZE) * 100}%`;
+
+      updateStatus();
+    }
+
+    applyLook(0, 0);
+
+    const _wp = new THREE.Vector3();
+    renderer.setAnimationLoop((time, xrFrame) => {
+      xr.updateControllers(camera);
+
+      if (renderer.xr.isPresenting) {
+        camera.getWorldPosition(_wp);
+      } else {
+        applyMovement();
+      }
+
+      tryAdvanceFrame(time);
+      fillPool();
+      updateStats(time);
+
+      renderer.render(scene, camera);
+    });
+  </script>
+</body>
+</html>
