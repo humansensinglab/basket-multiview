@@ -145,16 +145,31 @@
     contentGroup.rotation.x = -Math.PI / 2;
     scene.add(contentGroup);
 
-    const bgMesh = new SplatMesh({
-      url: BG_URL,
-      onLoad: () => {
-        hideLoading();
-        setStatus("Select a play above");
-      },
-    });
-    bgMesh.frustumCulled = false;
-    bgMesh.scale.setScalar(BG_SCALE);
-    contentGroup.add(bgMesh);
+    async function loadBackground() {
+      const msgEl  = document.getElementById("load-msg");
+      const fillEl = document.getElementById("load-bar-fill");
+      const res    = await fetch(BG_URL);
+      const total  = parseInt(res.headers.get("content-length") || "0");
+      const reader = res.body.getReader();
+      const chunks = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        if (total) fillEl.style.width = `${(received / total * 100).toFixed(0)}%`;
+        else msgEl.textContent = `Loading background… ${(received / 1e6).toFixed(0)} MB`;
+      }
+      const bgMesh = new SplatMesh({
+        url: URL.createObjectURL(new Blob(chunks)),
+        onLoad: () => { hideLoading(); setStatus("Select a play above"); },
+      });
+      bgMesh.frustumCulled = false;
+      bgMesh.scale.setScalar(BG_SCALE);
+      contentGroup.add(bgMesh);
+    }
+    loadBackground();
 
     const xr = new SparkXr({
       renderer,
