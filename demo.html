@@ -104,7 +104,9 @@
     import { SparkRenderer, SplatMesh, SparkXr } from "@sparkjsdev/spark";
 
     const BASE_URL = "https://huggingface.co/datasets/saswat72444/basket-artifacts/resolve/main";
-    const BG_URL = `${BASE_URL}/stadium_bg_new_clean.ply`;
+    // Smaller ply for quest 2
+    const isQuest2 = /Quest 2/.test(navigator.userAgent);
+    const BG_URL = isQuest2 ? `${BASE_URL}/stadium_bg_lite.ply` : `${BASE_URL}/stadium_bg_new_clean.ply`;
     const PLAYS = {
       atc_1: 320,
       atc_2: 130,
@@ -116,7 +118,7 @@
     const TARGET_FPS = 24;
     const POOL_SIZE = 6;
     const MIN_BUFFER = 4;
-    const BG_SCALE = 1 / 100;
+    const BG_SCALE = isQuest2 ? 1 : 0.01;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
