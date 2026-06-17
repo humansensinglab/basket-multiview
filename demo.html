@@ -42,6 +42,11 @@
     #load-bar-wrap { width: 220px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
     #load-bar-fill { height: 100%; width: 0; background: #3b82f6; border-radius: 2px; transition: width 0.12s; }
 
+    #speed {
+      position: fixed; bottom: 60px; left: 14px; z-index: 5;
+      display: flex; gap: 5px; pointer-events: all;
+    }
+
     #hint {
       position: fixed; bottom: 10px; left: 14px; z-index: 5;
       font-size: 11px; line-height: 2; color: rgba(255,255,255,0.35);
@@ -82,6 +87,13 @@
     <div id="status">Loading background…</div>
   </div>
 
+  <div id="speed">
+    <button class="play-btn speed-btn active" data-speed="1">1×</button>
+    <button class="play-btn speed-btn" data-speed="1.25">1.25×</button>
+    <button class="play-btn speed-btn" data-speed="1.5">1.5×</button>
+    <button class="play-btn speed-btn" data-speed="2">2×</button>
+  </div>
+
   <div id="hint">
     <kbd>Drag</kbd> Look &nbsp;·&nbsp;
     <kbd>Scroll</kbd> Zoom &nbsp;·&nbsp;
@@ -116,7 +128,7 @@
       int_1: 185,
     };
     const TARGET_FPS = 24;
-    const POOL_SIZE = 6;
+    const POOL_SIZE = 12;
     const MIN_BUFFER = 4;
     const BG_SCALE = isQuest2 ? 1 : 0.01;
 
@@ -324,7 +336,7 @@
         return;
       }
 
-      if (currentFrame >= 0 && now - lastFrameTime < 1000 / TARGET_FPS) return;
+      if (currentFrame >= 0 && now - lastFrameTime < 1000 / (TARGET_FPS * playSpeed)) return;
 
       const readyCount = pool.filter(s => s.state === "READY").length;
       if (currentFrame < 0 && readyCount < MIN_BUFFER) return;
@@ -417,7 +429,7 @@
     function hidePlayLoading() { loadingEl.classList.add("hidden"); }
 
     function setActiveButton(play) {
-      document.querySelectorAll(".play-btn").forEach(b =>
+      document.querySelectorAll(".play-btn:not(.speed-btn)").forEach(b =>
         b.classList.toggle("active", b.dataset.play === play)
       );
     }
@@ -433,8 +445,17 @@
       }
     }
 
-    document.querySelectorAll(".play-btn").forEach(btn => {
+    let playSpeed = 1;
+
+    document.querySelectorAll(".play-btn:not(.speed-btn)").forEach(btn => {
       btn.addEventListener("click", () => loadPlay(btn.dataset.play));
+    });
+
+    document.querySelectorAll(".speed-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        playSpeed = parseFloat(btn.dataset.speed);
+        document.querySelectorAll(".speed-btn").forEach(b => b.classList.toggle("active", b === btn));
+      });
     });
 
     const frameTimes = [];
